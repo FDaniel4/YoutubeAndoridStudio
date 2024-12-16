@@ -1,15 +1,15 @@
 package com.example.youtube
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,9 +20,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.youtube.ui.theme.YoutubeTheme
-import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +35,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             YoutubeTheme {
                 Scaffold(
-                    topBar = { TopBar() },  // Barra de navegación superior
-                    bottomBar = { BottomNavigationBar() } // Barra de navegación inferior
+                    topBar = { TopBar() },
+                    bottomBar = { BottomNavigationBar() }
                 ) { innerPadding ->
                     MainContent(modifier = Modifier.padding(innerPadding))
                 }
@@ -53,24 +58,27 @@ fun TopBar() {
         },
         navigationIcon = {  },
         actions = {
-            // Ícono de cast
-            IconButton(onClick = { /* Acción de ajustes */ }) {
+            IconButton(onClick = { },
+                modifier = Modifier.padding(end = 10.dp)) {
                 Icon(
                     painter = painterResource(id = R.drawable.cast_24),
                     contentDescription = "Ajustes",
                     tint = Color.White
                 )
             }
-            // Ícono de notificaciones
-            IconButton(onClick = { /* Acción de notificaciones */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.notifications_24),
-                    contentDescription = "Notificaciones",
-                    tint = Color.White
-                )
+            Box(contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(end = 10.dp)) {
+                BadgedBox(badge = { Badge { Text("9+") } }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.notifications_24),
+                        contentDescription = "N",
+                        tint = Color.White
+                    )
+                }
             }
-            // Ícono de busqueda
-            IconButton(onClick = { /* Acción de búsqueda */ }) {
+
+            IconButton(onClick = {  }) {
                 Icon(
                     painter = painterResource(id = R.drawable.search_24),
                     contentDescription = "Buscar",
@@ -107,7 +115,7 @@ fun BottomNavigationBar() {
 fun BottomNavigationItem(iconRes: Int, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(painter = painterResource(id = iconRes), contentDescription = label, modifier = Modifier.size(24.dp), tint = Color.White)
-        Text(text = label, color = Color.White)
+        Text(text = label, color = Color.White, fontSize = 10.sp)
     }
 }
 
@@ -117,45 +125,43 @@ fun MainContent(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(16.dp) // Agregar padding opcional
+            .padding(10.dp)
     ) {
-        // Sección de categorías
         CategoriesSection()
 
-        // Lista de videos
         VideoItem(
             title = "Hay viajes que son mejores en un Airbnb.",
-            description = "",
-            thumbnailRes = R.drawable.paris // Ejemplo de imagen de video
+            thumbnailRes = R.drawable.paris
         )
 
-        // Fila para los botones
         Row(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = { /*TODO*/ },
+            OutlinedButton(
+                onClick = {  },
                 modifier = Modifier
-                    .weight(1f) // Para ocupar el mismo ancho
-                    .padding(end = 8.dp),
-                    //.background(Color.Blue)
-                colors = ButtonDefaults.buttonColors(contentColor = Color.White)
+                    .weight(1f)
+                    .height(35.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
             ) {
-                Text(text = "Mirar")
+                Text(
+                    text = "Mirar",
+                    color = Color(0xFF009DCF)
+                )
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { },
                 modifier = Modifier
-                    .weight(1f) // Para ocupar el mismo ancho
-                    .padding(start = 8.dp),
-                  //  .background(Color.Red),
-                colors = ButtonDefaults.buttonColors(contentColor = Color.White)
+                    .weight(1f)
+                    .height(35.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF009DCF))
             ) {
-                Text(text = "Reservar")
+                Text(text = "Reservar",
+                    color = Color.Black)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        // Sección de texto e ícono
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -171,68 +177,143 @@ fun MainContent(modifier: Modifier = Modifier) {
                     text = "Shorts",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 4.dp)
+                    modifier = Modifier.padding(start = 4.dp),
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
 
-        // Sección de imágenes en fila
         Row(modifier = Modifier.fillMaxWidth()) {
-            Image(
-                painter = painterResource(id = R.drawable.bromas),
-                contentDescription = "Descripción de la imagen 1",
-                modifier = Modifier
-                    .weight(1f)
-                    .height(350.dp),
-                contentScale = ContentScale.Crop
-            )
 
-            Image(
-                painter = painterResource(id = R.drawable.mundo),
-                contentDescription = "Descripción de la imagen 2",
-                modifier = Modifier
-                    .weight(1f)
+            Box(modifier = Modifier
+                .weight(1f)
+                .height(350.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.bromas),
+                    contentDescription = "El bromas",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = "Mira el trailer completo ahora mismo",
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(8.dp),
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp
+                )
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    tint = Color.White
+                )
+            }
 
-                    .height(350.dp),
-                contentScale = ContentScale.Crop
-            )
+            Box(modifier = Modifier
+                .weight(1f)
+                .height(350.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.mundo),
+                    contentDescription = "Descripción de la imagen 2",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = "Hola mundo en diferentes lenguajes de programación",
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(8.dp),
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp
+                )
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    tint = Color.White
+                )
+            }
         }
+
     }
 }
 
 
+@SuppressLint("InvalidColorHexValue")
 @Composable
 fun CategoriesSection() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(3.dp),
+            .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-
-
-        Button(onClick = { /* Acción de Todos */ }) {
-            Image(
+        IconButton(
+            onClick = { },
+            modifier = Modifier.size(48.dp).clip(RectangleShape),
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color(0xFF352B2B))
+        ) {
+            Icon(
                 painter = painterResource(id = R.drawable.explore_24),
-                contentDescription = "Todos",
-                modifier = Modifier.size(24.dp),
-                contentScale = ContentScale.Crop
+                contentDescription = "Notificaciones",
+                tint = Color.White
             )
         }
-        Button(onClick = { /* Acción de Todos */ }) {
+
+
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                contentColor = Color.Black
+            ),
+            shape = RoundedCornerShape(5.dp),
+        ) {
             Text("Todos")
         }
-        Button(onClick = { /* Acción de Novedad */ }) {
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF352B2B)),
+            shape = RoundedCornerShape(5.dp)
+        ) {
             Text("Novedad")
         }
-        Button(onClick = { /* Acción de Música */ }) {
-            Text("Músic")
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF352B2B)),
+            shape = RoundedCornerShape(5.dp)
+        ) {
+            Text("Música")
+        }
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF352B2B)),
+            shape = RoundedCornerShape(5.dp)
+        ) {
+            Text("En tiempo real")
         }
     }
 }
 
 @Composable
-fun VideoItem(title: String, description: String, thumbnailRes: Int) {
+fun VideoItem(title: String, thumbnailRes: Int) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)) {
@@ -240,12 +321,13 @@ fun VideoItem(title: String, description: String, thumbnailRes: Int) {
             painter = painterResource(id = thumbnailRes),
             contentDescription = title,
             modifier = Modifier
-                .fillMaxWidth() // Cambia a fillMaxWidth
-                .height(200.dp), // Ajusta la altura según lo necesites
+                .fillMaxWidth()
+                .height(200.dp),
             contentScale = ContentScale.Crop
         )
+
         Spacer(modifier = Modifier.height(8.dp))
-        Row(modifier = Modifier.padding(all = 8.dp)) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Image(
                 painter = painterResource(R.drawable.airbnb),
                 contentDescription = null,
@@ -257,21 +339,41 @@ fun VideoItem(title: String, description: String, thumbnailRes: Int) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(text = title, style = MaterialTheme.typography.bodyLarge, color = Color.White) // Cambia el color aquí
-
+                Text(text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    fontSize = 11.sp,)
                 Spacer(modifier = Modifier.height(4.dp))
+                Text(text = "¿Por que quedarse en la zona turistica si podran ir a un Airbnb?",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = "Patroncinado",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    fontSize = 8.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
             }
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "User Icon",
+                tint = Color(Color.White.value)
+            )
         }
     }
 }
 
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewMainActivity() {
     YoutubeTheme {
         MainContent()
-
     }
 }
